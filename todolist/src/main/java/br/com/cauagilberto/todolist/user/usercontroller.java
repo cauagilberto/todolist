@@ -3,6 +3,9 @@ package br.com.cauagilberto.todolist.user;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -18,19 +21,20 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 
 public class usercontroller {
-    /**
-     * string(texto)
-     * integer (int - numeros inteiros)
-     * double (números 0.00000)
-     * float (números 0.00)
-     * char (letras/caracteres)
-     * date (data)
-     * void 
-     */
+    
+    @Autowired
+    private IUserRepo userRepo;
 
     @PostMapping("/")
-    public void create(@RequestBody UserModel userModel) {
-        System.out.println(userModel.getUsername());
-
+    public ResponseEntity create(@RequestBody UserModel userModel) {
+        var user = this.userRepo.findByUsername(userModel.getUsername());
+        if (user != null) {
+            //System.out.println("Usuário já existe");
+            //precisamos retornar um erro
+            //precisamos retornar um status code
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já existe");
+        }
+        var userCreated = this.userRepo.save(userModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
      }
 }
