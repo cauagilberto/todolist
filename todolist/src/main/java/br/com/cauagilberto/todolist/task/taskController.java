@@ -15,6 +15,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -50,5 +53,13 @@ public class taskController {
         var idUser = request.getAttribute("idUser");
         var task = this.taskRepo.findByIdUser((UUID) idUser);
         return task;
+    }
+
+    @PutMapping("/{id}")
+    public taskModel update(@RequestBody taskModel taskModel, HttpServletRequest request, @PathVariable UUID id){
+        var idUser = request.getAttribute("idUser");
+        taskModel.setIdUser((UUID) idUser);
+        taskModel.setId(id);
+        return this.taskRepo.save(taskModel);
     }
 }
