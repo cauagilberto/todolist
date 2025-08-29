@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
+import br.com.cauagilberto.todolist.utils.utils;
 
 
 @RestController
@@ -57,9 +57,11 @@ public class taskController {
 
     @PutMapping("/{id}")
     public taskModel update(@RequestBody taskModel taskModel, HttpServletRequest request, @PathVariable UUID id){
-        var idUser = request.getAttribute("idUser");
-        taskModel.setIdUser((UUID) idUser);
-        taskModel.setId(id);
-        return this.taskRepo.save(taskModel);
+
+        var task = this.taskRepo.findById(id).orElse(null);
+
+        utils.copuNullProperties(taskModel, task);
+
+        return this.taskRepo.save(task);
     }
 }
