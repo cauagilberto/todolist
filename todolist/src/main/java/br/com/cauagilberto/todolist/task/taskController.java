@@ -60,8 +60,18 @@ public class taskController {
 
         var task = this.taskRepo.findById(id).orElse(null);
 
-        utils.copuNullProperties(taskModel, task);
+        if(task == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Tarefa não encontrada");
+        }
 
-        return this.taskRepo.save(task);
+        var idUser = request.getAttribute("idUser");
+        if(!task.getIdUser().equals(idUser)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Usuário não tem permissão para alterar a tarefa.");
+        }
+        utils.copuNullProperties(taskModel, task);
+        var taskUpdated = this.taskRepo.save(task);
+        return ResponseEntity.ok().body(this.taskRepo.save(taskUpdated));
     }
 }
